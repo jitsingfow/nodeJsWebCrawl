@@ -11,11 +11,14 @@ var webLinks = mongoose.Schema({
     referenceCount: Number,
     paramList: Array
 });
+
 var WebLinks = mongoose.model("WebLinks", webLinks);
 
-// const uri = "https://medium.com/@nodejs";
-const uri = "https://medium.com/some/thing";
-// const uri = "https://medium.com/@priya_ebooks";
+// var uri = "https://medium.com/@nodejs";
+//var uri = "https://medium.com/some/thing";
+// var uri = "https://medium.com/@priya_ebooks";
+
+var uri = process.argv[2];
 
 var parameter = '';
 
@@ -140,6 +143,7 @@ function main(uri) {
     }
     
 }
+
 
 main(uri);
 
