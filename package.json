@@ -1,0 +1,21 @@
+{
+  "name": "expresswebcrawling",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://jitsingfow@bitbucket.org/jitsingfow/webcrawling.git"
+  },
+  "author": "Nabajit Das",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/jitsingfow/webcrawling#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "fs": "0.0.1-security",
+    "request": "^2.88.0"
+  }
+}
