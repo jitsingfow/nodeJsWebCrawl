@@ -17,21 +17,22 @@ var webLinks = mongoose.Schema({
 var WebLinks = mongoose.model("WebLinks", webLinks);
 
 
-var uri = process.argv[2];
+var uri = [process.argv[2]];
 var blackListUrlsArray = [];
 var crawlQueueArray = [];
-var reqIndexFlag = 0;
+var concurrency = 5;
 
 function crawlQueueInsert(url) {
-
-    var index = blackListUrlsArray.indexOf(url);
-    if (index === -1) {
-        crawlQueueArray.push(url);
-        return true;
-    } else {
-        return false;
+    for (var i = 0; i < url.length; i++) {
+        var index = blackListUrlsArray.indexOf(url);
+        if (index === -1) {
+            crawlQueueArray.push(url[i]);
+            blackListUrl(url[i]);
+            // return true;
+        } else {
+            // return false;
+        }
     }
-
 }
 
 function crawlQueueShift() {
@@ -44,7 +45,7 @@ function blackListUrl(url) {
         blackListUrlsArray.push(url);
         return true;
     } else {
-        console.log("Element already exists in blackListUrlsArray")
+        console.log("Element already exists in blackListUrlsArray");
         return false;
     }
 }
@@ -145,3 +146,27 @@ function crawlWeb(uri) {
 }
 
 
+function main(uri) {
+
+    crawlQueueInsert(uri);
+    if(crawlQueueArray.length === 0){
+        return;
+    }
+    concurrency = Math.min(concurrency, crawlQueueArray.length);
+    
+    console.log("crawlQueueArray :: ", crawlQueueArray);
+    for(var i=0; i< concurrency; i++){
+        crawlWeb(crawlQueueShift())
+            .then(function (result) {
+                main(result.newLinks);                
+                console.log("result.newLinks :: ",result.newLinks);
+            })
+            .catch(function (err) {
+                console.log("crawl err");
+                return;
+            });
+    }
+
+
+}
+main(uri);
