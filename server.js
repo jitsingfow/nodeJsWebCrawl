@@ -36,7 +36,6 @@ function crawlQueueInsert(url) {
         crawlQueueArray.push(url);
         return true;
     } else {
-        console.log("Element already exists in queue")
         return false;
     }
 
@@ -68,6 +67,7 @@ function crawlWeb(uri) {
         }
         else {
             console.log("####################    Starting -  webcrawl ##################################");
+            console.log(uri);
 
             let $ = cheerio.load(body);
 
@@ -147,20 +147,3 @@ function crawlWeb(uri) {
         }
     });
 }
-
-
-function main(uri) {
-
-    if(blackListUrlsArray.indexOf(uri) === -1){
-        crawlQueueInsert(uri);
-        
-        crawlWeb(uri);
-        //crawlQueueShift();
-        blackListUrl(uri);
-    }
-    
-}
-
-
-main(uri);
-
