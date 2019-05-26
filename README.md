@@ -1,5 +1,27 @@
 # WebCrawling
 
-TO start the app
+
+TO setup:
+
+1. Install node js & npm
+
+2. Clone the repo
+
+3. npm i
+
+
+
+Command to start crawling: 
 
 npm start '<your URI here>'
+
+
+
+
+
+
+
+
+Author : Nabajit Das
+Email: jitsingfow@gmail.com
+Phone: 9901402896
