@@ -8,6 +8,7 @@ mongoose.connect('mongodb://localhost/webCrawl', { useNewUrlParser: true });
 
 var webLinks = mongoose.Schema({
     link: String,
+    uniqueLinks: Array,
     referenceCount: Number,
     paramList: Array
 });
