@@ -2,8 +2,9 @@ const request = require('request');
 const cheerio = require('cheerio');
 const fs = require('fs');
 const mongoose = require('mongoose');
-// const { URL } = require('url');
 
+
+//DB connection
 mongoose.connect('mongodb://localhost/webCrawl', { useNewUrlParser: true });
 
 var webLinks = mongoose.Schema({
@@ -15,19 +16,11 @@ var webLinks = mongoose.Schema({
 
 var WebLinks = mongoose.model("WebLinks", webLinks);
 
-// var uri = "https://medium.com/@nodejs";
-//var uri = "https://medium.com/some/thing";
-// var uri = "https://medium.com/@priya_ebooks";
 
 var uri = process.argv[2];
-
-var parameter = '';
-
 var blackListUrlsArray = [];
-
 var crawlQueueArray = [];
-
-var reqIndexFlag = 4;
+var reqIndexFlag = 0;
 
 function crawlQueueInsert(url) {
 
