@@ -80,7 +80,7 @@ function crawlWeb(uri) {
                 linksArray.push($(link).attr('href'));
             });
 
-            var uniqueLinks = Array.from(new Set(linksArray));
+            
 
             var dbObj = {};
 
@@ -115,9 +115,11 @@ function crawlWeb(uri) {
 
             dbObj.link = uri;
 
-            dbObj.uniqueLinks = Array.from(new Set(linksAndParams.map(function (element) {
+            var uniqueLinks = Array.from(new Set(linksAndParams.map(function (element) {
                 return element.link;
             })));
+
+            dbObj.uniqueLinks = uniqueLinks;
 
             var paramsList = [];
             linksAndParams.forEach(function (element) {
@@ -129,6 +131,7 @@ function crawlWeb(uri) {
                     }
                 }
             });
+
             dbObj.paramList = Array.from(new Set(paramsList));
             dbObj.referenceCount = filteredList.length;
 
@@ -140,7 +143,7 @@ function crawlWeb(uri) {
                 console.log("saved a record");;
             });
 
-            return true;
+            return {newLinks: uniqueLinks};
         }
     });
 }
