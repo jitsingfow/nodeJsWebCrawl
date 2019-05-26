@@ -61,89 +61,94 @@ function blackListUrl(url) {
 
 function crawlWeb(uri) {
 
-    request(uri, function (err, res, body) {
-        if (err) {
-            console.log("Error in making request");
-        }
-        else {
-            console.log("####################    Starting -  webcrawl ##################################");
-            console.log(uri);
-
-            let $ = cheerio.load(body);
-
-            var links = $('a');
-
-            var linksArray = [];
-
-            //all href links
-            $(links).each(function (i, link) {
-                linksArray.push($(link).attr('href'));
-            });
-
-            
-
-            var dbObj = {};
-
-            var linksAndParams = [];
-
-            for (var i = 0; i < linksArray.length; i++) {
-
-                var splitesUrl = linksArray[i].split('?');
-
-                if (splitesUrl.length > 1) {
-                    var paramStringArray = splitesUrl[1].split('&');
-                    var listOfParams = [];
-
-                    paramStringArray.forEach(function (element) {
-                        listOfParams.push(element.split('=')[0]);
-                    });
-                    linksAndParams.push({
-                        link: splitesUrl[0],
-                        params: Array.from(new Set(listOfParams))
-                    });
-                }
-                else {
-                    linksAndParams.push({
-                        link: splitesUrl[0]
-                    });
-                }
+    return new Promise(function (resolve, reject) {
+        request(uri, function (err, res, body) {
+            if (err) {
+                console.log("Error in making request");
+                reject(err);
             }
+            else {
+                console.log("####################    Starting -  webcrawl ##################################");
+                console.log(uri);
 
-            var filteredList = linksAndParams.filter(function (obj) {
-                return obj.link === uri;
-            });
+                let $ = cheerio.load(body);
 
-            dbObj.link = uri;
+                var links = $('a');
 
-            var uniqueLinks = Array.from(new Set(linksAndParams.map(function (element) {
-                return element.link;
-            })));
+                var linksArray = [];
 
-            dbObj.uniqueLinks = uniqueLinks;
+                //all href links
+                $(links).each(function (i, link) {
+                    linksArray.push($(link).attr('href'));
+                });
 
-            var paramsList = [];
-            linksAndParams.forEach(function (element) {
-                if (element.link === uri) {
-                    if (element.params != undefined) {
-                        element.params.forEach(function (param) {
-                            paramsList.push(param);
+
+
+                var dbObj = {};
+
+                var linksAndParams = [];
+
+                for (var i = 0; i < linksArray.length; i++) {
+
+                    var splitesUrl = linksArray[i].split('?');
+
+                    if (splitesUrl.length > 1) {
+                        var paramStringArray = splitesUrl[1].split('&');
+                        var listOfParams = [];
+
+                        paramStringArray.forEach(function (element) {
+                            listOfParams.push(element.split('=')[0]);
+                        });
+                        linksAndParams.push({
+                            link: splitesUrl[0],
+                            params: Array.from(new Set(listOfParams))
+                        });
+                    }
+                    else {
+                        linksAndParams.push({
+                            link: splitesUrl[0]
                         });
                     }
                 }
-            });
 
-            dbObj.paramList = Array.from(new Set(paramsList));
-            dbObj.referenceCount = filteredList.length;
+                var filteredList = linksAndParams.filter(function (obj) {
+                    return obj.link === uri;
+                });
 
-            var newWebLinks = new WebLinks(dbObj);
-            newWebLinks.save(function (err, webLinks) {
-                if (err) {
-                    console.log(err);
-                }
-                console.log("saved a record");;
-            });
+                dbObj.link = uri;
 
-            return {newLinks: uniqueLinks};
-        }
+                var uniqueLinks = Array.from(new Set(linksAndParams.map(function (element) {
+                    return element.link;
+                })));
+
+                dbObj.uniqueLinks = uniqueLinks;
+
+                var paramsList = [];
+                linksAndParams.forEach(function (element) {
+                    if (element.link === uri) {
+                        if (element.params != undefined) {
+                            element.params.forEach(function (param) {
+                                paramsList.push(param);
+                            });
+                        }
+                    }
+                });
+
+                dbObj.paramList = Array.from(new Set(paramsList));
+                dbObj.referenceCount = filteredList.length;
+
+                var newWebLinks = new WebLinks(dbObj);
+                newWebLinks.save(function (err, webLinks) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    console.log("saved a record");;
+                });
+
+                resolve({ newLinks: uniqueLinks });
+            }
+        });
     });
 }
+
+
