@@ -73,61 +73,74 @@ function crawlWeb(uri) {
 
             var links = $('a');
 
-
-            var referenceCount = links.length;
-
             var linksArray = [];
 
+            //all href links
             $(links).each(function (i, link) {
                 linksArray.push($(link).attr('href'));
             });
 
-            var arrayOfResObj = [];
+            var uniqueLinks = Array.from(new Set(linksArray));
 
-            for (var item in linksArray) {
-                var resObj = {};
+            var dbObj = {};
 
-                var listOfParams = [];
+            var linksAndParams = [];
 
-                var splitesUrl = linksArray[item].split('?');
+            for (var i = 0; i < linksArray.length; i++) {
 
-                if (arrayOfResObj.length) {
-                    for (var r = 0; r < arrayOfResObj; r++) {
-                        if (splitesUrl[0] === arrayOfResObj[i].link) {
-                            arrayOfResObj[i].referenceCount = arrayOfResObj[i].referenceCount + 1;
-                        }
-                    }
-                }
-
-
-                resObj.link = splitesUrl[0];
+                var splitesUrl = linksArray[i].split('?');
 
                 if (splitesUrl.length > 1) {
                     var paramStringArray = splitesUrl[1].split('&');
+                    var listOfParams = [];
 
                     paramStringArray.forEach(function (element) {
                         listOfParams.push(element.split('=')[0]);
                     });
-                    resObj.paramList = Array.from(new Set(listOfParams));
-                }
-                resObj.referenceCount = 0;
-                // console.log("Res :: ", resObj);
-                arrayOfResObj.push(resObj);
-            }
-            if (arrayOfResObj.length>0) {
-                //to save in DB
-                arrayOfResObj.forEach(function (obj) {
-                    var newWebLinks = new WebLinks(obj);
-                    newWebLinks.save(function (err, webLinks) {
-                        if (err) {
-                            console.log(err);
-                        }
-                        console.log(obj);
-                        console.log("saved a record");;
+                    linksAndParams.push({
+                        link: splitesUrl[0],
+                        params: Array.from(new Set(listOfParams))
                     });
-                });
-                return arrayOfResObj;
+                }
+                else {
+                    linksAndParams.push({
+                        link: splitesUrl[0]
+                    });
+                }
             }
+
+            var filteredList = linksAndParams.filter(function (obj) {
+                return obj.link === uri;
+            });
+
+            dbObj.link = uri;
+
+            dbObj.uniqueLinks = Array.from(new Set(linksAndParams.map(function (element) {
+                return element.link;
+            })));
+
+            var paramsList = [];
+            linksAndParams.forEach(function (element) {
+                if (element.link === uri) {
+                    if (element.params != undefined) {
+                        element.params.forEach(function (param) {
+                            paramsList.push(param);
+                        });
+                    }
+                }
+            });
+            dbObj.paramList = Array.from(new Set(paramsList));
+            dbObj.referenceCount = filteredList.length;
+
+            var newWebLinks = new WebLinks(dbObj);
+            newWebLinks.save(function (err, webLinks) {
+                if (err) {
+                    console.log(err);
+                }
+                console.log("saved a record");;
+            });
+
+            return true;
         }
     });
 }
