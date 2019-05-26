@@ -36,8 +36,8 @@ function crawlQueueInsert(url) {
         crawlQueueArray.push(url);
         return true;
     } else {
-        return false;
         console.log("Element already exists in queue")
+        return false;
     }
 
 }
@@ -52,8 +52,8 @@ function blackListUrl(url) {
         blackListUrlsArray.push(url);
         return true;
     } else {
-        return false;
         console.log("Element already exists in blackListUrlsArray")
+        return false;
     }
 }
 
