@@ -23,5 +23,3 @@ npm start '<your URI here>'
 
 
 Author : Nabajit Das
-Email: jitsingfow@gmail.com
-Phone: 9901402896
